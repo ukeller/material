@@ -64,10 +64,9 @@
         </ul>\
         <aria-status\
             class="visually-hidden"\
-            aria-atomic="true"\
             role="status"\
-            aria-live="polite">\
-          <p ng-repeat="item in $mdAutocompleteCtrl.matches">{{item.display}}</p>\
+            aria-live="assertive">\
+          <p>{{hintText}}</p>\
         </aria-status>',
       transclude: true,
       controller: 'MdAutocompleteCtrl',

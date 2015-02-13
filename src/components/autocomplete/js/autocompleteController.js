@@ -66,6 +66,21 @@
           self.fetch(searchText);
         }
       });
+
+      $scope.$watch('matchCount', function(matchCount) {
+        if (matchCount > 0) {
+          var matchWords = {
+            verb: 'are',
+            noun: 'matches'
+          };
+          if (matchCount === 1) {
+            matchWords.verb = 'is';
+            matchWords.noun = 'match';
+          }
+          var string = 'There '+matchWords.verb+ ' '+matchCount +' '+matchWords.noun+ ' available.';
+          setAriaStatus(string);
+        }
+      });
     }
 
     function fetchResults (searchText) {
@@ -73,6 +88,11 @@
           term = searchText.toLowerCase();
       promise = $q.when(items).then(function (matches) {
         cache[term] = matches;
+
+        // how can we announce a change in matches
+        // even with the cache?
+        $scope.matchCount = matches.length;
+
         if (searchText !== $scope.searchText) return; //-- just cache the results if old request
         promise = null;
         self.loading = false;
@@ -86,12 +106,14 @@
           if (self.loading) return;
           event.preventDefault();
           self.index = Math.min(self.index + 1, self.matches.length - 1);
+          setAriaStatus(getSelectedItemText());
           updateScroll();
           break;
         case $mdConstant.KEY_CODE.UP_ARROW:
           if (self.loading) return;
           event.preventDefault();
           self.index = Math.max(0, self.index - 1);
+          setAriaStatus(getSelectedItemText());
           updateScroll();
           break;
         case $mdConstant.KEY_CODE.ENTER:
@@ -129,9 +151,20 @@
     function select (index) {
       $scope.selectedItem = self.matches[index];
       $scope.searchText = getDisplayValue($scope.selectedItem) || $scope.searchText;
+      if ($scope.searchText) {
+        setAriaStatus($scope.searchText);
+      }
       self.hidden  = true;
       self.index   = -1;
       self.matches = [];
+    }
+
+    function getSelectedItemText () {
+      return self.matches[self.index].display;
+    }
+
+    function setAriaStatus (text) {
+      $scope.hintText = text;
     }
 
     function updateScroll () {
