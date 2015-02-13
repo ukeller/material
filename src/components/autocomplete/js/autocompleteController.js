@@ -115,6 +115,7 @@
     function clearValue () {
       $scope.searchText = '';
       select(-1);
+      elements.input.focus();
     }
 
     function isHidden () {
