@@ -79,6 +79,7 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
         var shrinkSpeedFactor = attr.mdShrinkSpeedFactor || 0.5;
 
         var toolbarHeight;
+        var maxScrollTop;
         var contentElement;
 
         var debouncedContentScroll = $$rAF.throttle(onContentScroll);
@@ -117,11 +118,12 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
             'margin-top',
             (-toolbarHeight * shrinkSpeedFactor) + 'px'
           );
+          maxScrollTop = contentElement.prop('scrollHeight') - contentElement.prop('offsetHeight');
           onContentScroll();
         }
 
         function onContentScroll(e) {
-          var scrollTop = e ? e.target.scrollTop : prevScrollTop;
+          var scrollTop = e ? Math.min(maxScrollTop, Math.max(0, e.target.scrollTop)) : prevScrollTop;
 
           debouncedUpdateHeight();
 
